@@ -1,0 +1,15 @@
+{
+  "timeline": [
+    { "id": 1, "stage": "Registration Period", "date": "Jan 1 - Feb 28", "description": "Register to vote and get your Voter ID." },
+    { "id": 2, "stage": "Campaign Period", "date": "Mar 1 - Apr 15", "description": "Candidates campaign and present their manifestos." },
+    { "id": 3, "stage": "Voting Day", "date": "Apr 20", "description": "Cast your vote at your designated polling booth." },
+    { "id": 4, "stage": "Results Announcement", "date": "May 5", "description": "Votes are counted and results are declared." }
+  ],
+  "steps": [
+    { "id": 1, "title": "Check Eligibility", "content": "You must be a citizen and at least 18 years old." },
+    { "id": 2, "title": "Register to Vote", "content": "Submit Form 6 online or at your local election office to get on the voter list." },
+    { "id": 3, "title": "Get Voter ID", "content": "Once registered, your Voter ID (EPIC) will be mailed to you or can be downloaded." },
+    { "id": 4, "title": "Find Polling Booth", "content": "Locate your designated polling station using the election commission website." },
+    { "id": 5, "title": "Vote on Election Day", "content": "Carry your Voter ID to the booth, press the button on the EVM, and confirm via VVPAT." }
+  ]
+}

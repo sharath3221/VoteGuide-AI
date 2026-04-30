@@ -1,0 +1,51 @@
+.dashboard-card {
+  padding: 32px;
+  margin-bottom: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  background: linear-gradient(to right, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.4));
+  border-left: 4px solid var(--primary);
+}
+
+.dashboard-info h3 {
+  margin: 0 0 8px 0;
+  color: var(--text-main);
+  font-size: 1.15rem;
+}
+
+.dashboard-info p {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+}
+
+.status-indicator .badge {
+  font-size: 1rem;
+  padding: 8px 16px;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Subtle pulse animation for the badge when status changes */
+@keyframes statusPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.status-indicator .badge {
+  animation: statusPulse 0.5s ease-out;
+}
+
+@media (max-width: 600px) {
+  .dashboard-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
