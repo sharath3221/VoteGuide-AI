@@ -28,7 +28,7 @@ export const useElectionState = () => {
     setIsLoading(true);
 
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+      const apiUrl = import.meta.env.VITE_API_URL || '';
 
       // Build Gemini-compatible history from current chat
       // Only include turns that have already been completed (exclude the new user message just added)
