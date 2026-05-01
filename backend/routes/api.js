@@ -1,11 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const electionData = require('../data/electionData.json');
-const { OpenAI } = require('openai'); // Fixed import for CommonJS
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 
-const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+if (!process.env.GEMINI_API_KEY) {
+  console.error('Missing GEMINI_API_KEY in backend environment. Please set it in backend/.env.');
+}
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const model = genAI.getGenerativeModel({ model: 'gemini-1.0-pro' });
 
 router.get('/timeline', (req, res) => {
   res.json(electionData.timeline);
@@ -16,68 +19,36 @@ router.get('/steps', (req, res) => {
 });
 
 router.post('/chat', async (req, res) => {
-  const { message, context, chatHistory } = req.body;
-  
-  const MASTER_PROMPT = `You are VoteGuide AI, a helpful, simple, and encouraging election assistant guiding users through the voting process.
-
-You must ALWAYS respond with a JSON object. Do not return markdown, just the raw JSON object.
-Structure:
-{
-  "reply": "Your conversational response to the user. Keep it friendly, short, and beginner-friendly.",
-  "context": {
-    "step": "Current logical step",
-    "status": "MUST be exactly one of: 'pending', 'eligible', 'not_eligible', 'ready'",
-    "age": "User's age if known (number) or null",
-    "hasVoterId": "true if they have one, false if they don't, or null if unknown",
-    "isFirstTimeVoter": "true if they are, false if they aren't, or null if unknown"
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
   }
-}
 
-Rules to determine 'status':
-1. If they are under 18 -> "not_eligible"
-2. If they are 18+ but do NOT have a Voter ID -> "eligible"
-3. If they already have a Voter ID -> "ready"
-4. Otherwise, or if you are still asking -> "pending"
+  const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-IMPORTANT PERSONALIZATION RULES:
-- If 'isFirstTimeVoter', 'hasVoterId', or 'age' is already known, do NOT ask for them again.
-- Use the provided context to answer intelligently and skip unnecessary questions.
+  const model = genAI.getGenerativeModel({
+    model: "gemini-1.0-pro"
+  });
 
-Current Context State: ${JSON.stringify(context)}
-Update the context fields based on the user's latest message and the conversation history.`;
-
-  // Convert custom chat history to OpenAI messages format
-  const formattedHistory = (chatHistory || []).map(msg => ({
-    role: msg.sender === 'bot' ? 'assistant' : 'user',
-    content: msg.text
-  }));
+  const { message, context } = req.body;
 
   try {
-    const response = await client.chat.completions.create({
-      model: "gpt-4o-mini",
-      response_format: { type: "json_object" },
-      messages: [
-        { role: "system", content: MASTER_PROMPT },
-        ...formattedHistory,
-        { role: "user", content: message }
-      ],
-    });
+    const result = await model.generateContent(message);
+    const reply = result.response.text();
 
-    const aiResponse = JSON.parse(response.choices[0].message.content);
-    
-    // Fallback if AI messes up the structure
-    if (!aiResponse.reply || !aiResponse.context) {
-      throw new Error("Invalid response structure from AI");
-    }
-
-    res.json(aiResponse);
+    res.status(200).json({ reply, context: context || {} });
 
   } catch (error) {
-    console.error("OpenAI Error:", error);
-    res.status(500).json({
-      reply: "I'm sorry, I'm having trouble connecting to my brain right now. Please make sure the OPENAI_API_KEY is set in the backend.",
-      context: context // Keep the old context
-    });
+    console.error("Gemini API Error:", error.message);
+    
+    let reply = "I'm sorry, I'm having trouble connecting to my brain right now. Please try again.";
+    
+    if (error.message.includes('API_KEY_INVALID') || error.message.includes('API key not valid')) {
+      reply = "I'm sorry, the AI API key is invalid or not configured correctly. Please check your Gemini API key in the backend.";
+    } else if (error.message.includes('quota')) {
+      reply = "I'm sorry, I'm having trouble connecting to my brain right now. The API quota may be exhausted. Please check your plan.";
+    }
+    
+    res.status(500).json({ reply, context: context || {} });
   }
 });
 

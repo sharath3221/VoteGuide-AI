@@ -3,16 +3,17 @@ import './StepGuide.css';
 
 const StepGuide = ({ context }) => {
   const [steps, setSteps] = useState([]);
+  const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
   useEffect(() => {
-    fetch('http://localhost:3001/api/steps')
+    fetch(`${apiUrl}/api/steps`)
       .then(res => res.json())
       .then(data => setSteps(data))
       .catch(err => console.error(err));
-  }, []);
+  }, [apiUrl]);
 
   return (
-    <div className="step-guide-container glass-panel animate-fade-in" style={{animationDelay: '0.4s'}}>
+    <div className="step-guide-container glass-panel animate-fade-in" style={{ animationDelay: '0.4s' }}>
       <h3>Step-by-Step Voting Guide</h3>
       <div className="steps-grid">
         {steps.map((step, index) => {

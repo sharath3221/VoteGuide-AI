@@ -3,13 +3,14 @@ import './Timeline.css';
 
 const Timeline = () => {
   const [timelineData, setTimelineData] = useState([]);
+  const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
   useEffect(() => {
-    fetch('http://localhost:3001/api/timeline')
+    fetch(`${apiUrl}/api/timeline`)
       .then(res => res.json())
       .then(data => setTimelineData(data))
       .catch(err => console.error(err));
-  }, []);
+  }, [apiUrl]);
 
   return (
     <div className="timeline-container glass-panel animate-fade-in" style={{animationDelay: '0.2s'}}>

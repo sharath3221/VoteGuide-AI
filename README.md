@@ -16,7 +16,7 @@ VoteGuide AI is a modern, interactive, and responsive web application designed t
 
 - **Frontend**: React (scaffolded with Vite), Vanilla CSS (Custom Design System).
 - **Backend**: Node.js, Express.
-- **AI Integration**: OpenAI API.
+- **AI Integration**: Google Gemini AI.
 
 ## 🚀 Getting Started
 
@@ -24,7 +24,7 @@ Follow these steps to run VoteGuide AI on your local machine.
 
 ### Prerequisites
 - Node.js (v18+ recommended)
-- An OpenAI API Key
+- A Google AI API Key (from Google AI Studio)
 
 ### 1. Clone the repository
 \`\`\`bash
@@ -39,7 +39,12 @@ cd backend
 npm install
 \`\`\`
 
-Create a `.env` file in the `backend` directory and add your OpenAI API key:
+Copy `backend/.env.example` to `backend/.env` and add your OpenAI API key:
+```bash
+cp backend/.env.example backend/.env
+```
+
+Then edit `backend/.env` and replace the placeholder with your real OpenAI API key:
 \`\`\`env
 OPENAI_API_KEY=sk-your-real-api-key-here
 PORT=3001
