@@ -21,6 +21,23 @@ const ChatAssistant = ({ chatHistory, sendMessage, isLoading }) => {
     }
   };
 
+  const formatMessage = (text) => {
+    // Split by bold markers **text**
+    const parts = text.split(/(\*\*.*?\*\*)/g);
+    return parts.map((part, index) => {
+      if (part.startsWith('**') && part.endsWith('**')) {
+        return <strong key={index}>{part.slice(2, -2)}</strong>;
+      }
+      // Handle line breaks
+      return part.split('\n').map((line, lineIndex) => (
+        <React.Fragment key={`${index}-${lineIndex}`}>
+          {line}
+          {lineIndex < part.split('\n').length - 1 && <br />}
+        </React.Fragment>
+      ));
+    });
+  };
+
   return (
     <div className="chat-container glass-panel animate-fade-in">
       <div className="chat-header">
@@ -32,7 +49,7 @@ const ChatAssistant = ({ chatHistory, sendMessage, isLoading }) => {
         {chatHistory.map((msg) => (
           <div key={msg.id} className={`message-wrapper ${msg.sender}`}>
             <div className={`message-bubble ${msg.sender}`}>
-              {msg.text}
+              {formatMessage(msg.text)}
             </div>
           </div>
         ))}
